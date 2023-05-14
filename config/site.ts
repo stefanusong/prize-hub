@@ -1,12 +1,8 @@
 export type SiteConfig = typeof siteConfig
 
 export const siteConfig = {
-  name: "PrizeHub",
+  name: "Prize Hub",
   description:
-    "Beautifully designed components built with Radix UI and Tailwind CSS.",
-  mainNav: [
-  ],
-  links: {
-    signin: "signin"
-  },
+    "the ultimate platform for managing doorprize events and helping you allocate exciting rewards to lucky winners with ease.",
+  mainNav: [],
 }
