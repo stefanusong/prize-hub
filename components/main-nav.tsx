@@ -1,10 +1,16 @@
 import * as React from "react"
 import Link from "next/link"
 
-import { NavItem } from "@/types/nav"
 import { siteConfig } from "@/config/site"
 import { cn } from "@/lib/utils"
-import { Icons } from "@/components/icons"
+import TeamSwitcher from "./team-switcher"
+
+interface NavItem {
+  title: string
+  href?: string
+  disabled?: boolean
+  external?: boolean
+}
 
 interface MainNavProps {
   items?: NavItem[]
@@ -13,9 +19,10 @@ interface MainNavProps {
 export function MainNav({ items }: MainNavProps) {
   return (
     <div className="flex gap-6 md:gap-10">
-      <Link href="/" className="hidden items-center space-x-2 md:flex">
-        <Icons.logo className="h-6 w-6" />
-        <span className="hidden font-bold sm:inline-block">
+      <TeamSwitcher />
+      <Link href="/" className="items-center space-x-2 flex">
+        {/* <Icons.logo className="h-6 w-6" /> */}
+        <span className="hidden font-extrabold sm:inline-block text-xl">
           {siteConfig.name}
         </span>
       </Link>

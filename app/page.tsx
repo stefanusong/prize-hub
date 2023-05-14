@@ -1,39 +1,24 @@
-import Link from "next/link"
+"use client"
 
-import { siteConfig } from "@/config/site"
-import { buttonVariants } from "@/components/ui/button"
+import { LoginDialog } from "../components/login-dialog";
+import { useSession } from "next-auth/react"
+import { useRouter } from 'next/navigation';
 
 export default function IndexPage() {
-  return (
-    <section className="container grid items-center gap-6 pb-8 pt-6 md:py-10">
-      <div className="flex max-w-[980px] flex-col items-start gap-2">
-        <h1 className="text-3xl font-extrabold leading-tight tracking-tighter sm:text-3xl md:text-5xl lg:text-6xl">
-          Beautifully designed components <br className="hidden sm:inline" />
-          built with Radix UI and Tailwind CSS.
-        </h1>
-        <p className="max-w-[700px] text-lg text-muted-foreground sm:text-xl">
-          Accessible and customizable components that you can copy and paste
-          into your apps. Free. Open Source. And Next.js 13 Ready.
-        </p>
-      </div>
-      <div className="flex gap-4">
-        <Link
-          href={siteConfig.links.docs}
-          target="_blank"
-          rel="noreferrer"
-          className={buttonVariants({ size: "lg" })}
-        >
-          Documentation
-        </Link>
-        <Link
-          target="_blank"
-          rel="noreferrer"
-          href={siteConfig.links.github}
-          className={buttonVariants({ variant: "outline", size: "lg" })}
-        >
-          GitHub
-        </Link>
-      </div>
-    </section>
-  )
+  const { data: session } = useSession()
+  const router = useRouter();
+
+  if (session && session.user) {
+    router.push("/dashboard")
+  } else {
+    return (
+      <section className="container grid items-center gap-6 pb-8 pt-6 md:py-10 justify-center">
+        <div className="flex flex-col items-center justify-center mt-24">
+          <h1 className="text-7xl font-extrabold italic">🎉 PRIZE HUB 🎉</h1>
+          <p className="text-lg text-center mt-5 mb-5">Prize Hub is the ultimate platform for managing doorprize events and helping you allocate exciting <br></br> rewards to lucky winners with ease, so you can focus on creating unforgettable experiences for your audience.</p>
+          <LoginDialog></LoginDialog>
+        </div>
+      </section>
+    )
+  }
 }
