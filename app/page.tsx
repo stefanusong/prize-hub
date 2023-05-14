@@ -1,5 +1,5 @@
 "use client"
-
+import styles from './styles.module.css';
 import Link from "next/link";
 import { LoginDialog } from "../components/login-dialog";
 import { useSession } from "next-auth/react"
@@ -35,7 +35,17 @@ export default function IndexPage() {
     return (
       <section className="container grid items-center gap-6 pb-8 pt-6 md:py-10 justify-center">
         <div className="flex flex-col items-center justify-center mt-24">
-          <h1 className="text-8xl font-extrabold italic">Arrange.Draw.Review</h1>
+          <h1 className='lg:flex lg:flex-row leading-tight lg:leading-normal'>
+            <span className={`${styles['heading-line']} ${styles['heading-line-first']}`}>
+              <span className={`${styles['heading-line-gradient']}`}>Arrange.</span>
+            </span>
+            <span className={`${styles['heading-line']} ${styles['heading-line-second']}`}>
+              <span className={`${styles['heading-line-gradient']}`}>Draw.</span>
+            </span>
+            <span className={`${styles['heading-line']} ${styles['heading-line-third']}`}>
+              <span className={`${styles['heading-line-gradient']}`}>Review.</span>
+            </span>
+          </h1>
           <div className="w-3/4">
             <p className="text-2xl text-zinc-400 text-center mt-5 mb-5">Prize Hub is the ultimate platform for managing doorprize events and helping you allocate exciting rewards to lucky winners with ease</p>
           </div>
@@ -49,7 +59,17 @@ export default function IndexPage() {
     return (
       <section className="container grid items-center gap-6 pb-8 pt-6 md:py-10 justify-center">
         <div className="flex flex-col items-center justify-center mt-24">
-          <h1 className="text-8xl font-extrabold italic">Arrange.Draw.Review</h1>
+          <h1 className='lg:flex lg:flex-row leading-tight lg:leading-normal'>
+            <span className={`${styles['heading-line']} ${styles['heading-line-first']}`}>
+              <span className={`${styles['heading-line-gradient']}`}>Arrange.</span>
+            </span>
+            <span className={`${styles['heading-line']} ${styles['heading-line-second']}`}>
+              <span className={`${styles['heading-line-gradient']}`}>Draw.</span>
+            </span>
+            <span className={`${styles['heading-line']} ${styles['heading-line-third']}`}>
+              <span className={`${styles['heading-line-gradient']}`}>Review.</span>
+            </span>
+          </h1>
           <div className="w-3/4">
             <p className="text-2xl text-zinc-400 text-center mt-5 mb-5">Prize Hub is the ultimate platform for managing doorprize events and helping you allocate exciting rewards to lucky winners with ease</p>
           </div>

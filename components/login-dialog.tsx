@@ -20,11 +20,9 @@ export function LoginDialog() {
         setLoggingIn(true)
 
         try {
-            const res = await signIn("google")
-            console.log("Loggin result:", res)
+            await signIn("google", { callbackUrl: `${window.location.origin}/dashboard` })
         } catch (error) {
-            console.log(error);
-            alert('Failed to sign in');
+            console.error(error);
         }
 
         setLoggingIn(false)
