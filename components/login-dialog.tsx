@@ -8,65 +8,51 @@ import {
     DialogHeader,
     DialogTrigger,
 } from "@/components/ui/dialog"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
 import { signIn } from "next-auth/react"
-import { useRef, useState } from "react"
-import { Loader2 } from "lucide-react"
+import { useState } from "react"
+import { Loader2, Chrome } from "lucide-react"
 
 export function LoginDialog() {
-    const email = useRef("")
-    const password = useRef("")
     const [loggingIn, setLoggingIn] = useState(false)
 
-    const onSubmit = async () => {
+    const onSubmit = async (event) => {
+        event.preventDefault();
         setLoggingIn(true)
-        const res = await signIn("credentials", {
-            username: email.current,
-            password: password.current,
-            redirect: true,
-            callbackUrl: "/dashboard",
-        })
 
-        console.log("Loggin result:", res)
+        try {
+            const res = await signIn("google")
+            console.log("Loggin result:", res)
+        } catch (error) {
+            console.log(error);
+            alert('Failed to sign in');
+        }
+
+        setLoggingIn(false)
     }
 
     return (
         <Dialog>
             <DialogTrigger asChild>
-                <Button>Get Started</Button>
+                <Button className="text-lg font-semibold">Get Started</Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-[425px]">
                 <DialogHeader>
-
+                    <h1 className="text-center text-xl font-bold">Log in to Prize Hub</h1>
                 </DialogHeader>
-                <div className="grid gap-4 py-4">
-                    <div>
-                        <Label htmlFor="email" className="text-right">
-                            Email
-                        </Label>
-                        <Input id="name" type="email" onChange={(e) => { email.current = e.target.value }} placeholder="some@example.com" className="mt-3" />
-                    </div>
-                    <div>
-                        <Label htmlFor="password" className="text-right">
-                            Password
-                        </Label>
-                        <Input id="password" type="password" onChange={(e) => { password.current = e.target.value }} placeholder="*********" className="mt-3" onKeyDown={(e) => { e.key === "Enter" ? onSubmit() : null }} />
-                    </div>
-                </div>
-                <DialogFooter>
-                    {!loggingIn && (
-                        <Button type="submit" variant={"outline"} onClick={onSubmit}>
-                            Login 🚀
-                        </Button>
-                    )}
+                {!loggingIn && (
+                    <Button type="submit" variant={"default"} onClick={onSubmit}>
+                        <Chrome />
+                        <p className="font-semibold ml-3 text-lg">Continue with Google</p>
+                    </Button>
+                )}
 
-                    {loggingIn && (
-                        <Button disabled>
-                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                            Logging In
-                        </Button>
-                    )}
+                {loggingIn && (
+                    <Button disabled>
+                        <Loader2 className="animate-spin" />
+                        <p className="font-semibold ml-3 text-lg">Continue with Google</p>
+                    </Button>
+                )}
+                <DialogFooter>
                 </DialogFooter>
             </DialogContent>
         </Dialog>

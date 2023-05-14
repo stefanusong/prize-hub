@@ -8,7 +8,7 @@ export default function DashboardPage() {
           <Sidebar className="block h-screen" />
           <div className="col-span-3 lg:col-span-4 lg:border-l h-full">
             <div className="h-full px-4 py-6 lg:px-8">
-
+              <p>Dashboard</p>
             </div>
           </div>
         </div>

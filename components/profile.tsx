@@ -32,6 +32,7 @@ export function Profile() {
             <DropdownMenuTrigger asChild>
                 <Button variant="ghost" className="relative h-8 w-8 rounded-full">
                     <Avatar className="h-8 w-8">
+                        <AvatarImage src={session && session.user ? session!.user.image : ""} alt="Profile Image" />
                         <AvatarFallback>{session && session.user ? getInitials(session.user.name!) : '?'}</AvatarFallback>
                     </Avatar>
                 </Button>
