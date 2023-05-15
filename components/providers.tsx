@@ -3,6 +3,7 @@
 import React, { ReactNode } from "react";
 import { SessionProvider } from "next-auth/react"
 import { ThemeProvider } from "./theme-provider";
+import { WorkspaceProvider } from "@/context/workspace.context";
 
 interface Props {
     children: ReactNode
@@ -11,9 +12,11 @@ interface Props {
 const Providers = ({ children }: Props) => {
     return (
         <SessionProvider>
-            <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-                {children}
-            </ThemeProvider>
+            <WorkspaceProvider>
+                <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+                    {children}
+                </ThemeProvider>
+            </WorkspaceProvider>
         </SessionProvider>
     )
 }

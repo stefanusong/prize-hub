@@ -17,6 +17,7 @@ export const authOptions: NextAuthOptions = {
   callbacks: {
     async signIn({ user }) {
       try {
+        // Check if user exists
         const existingUser = await prisma.user.findUnique({
           where: {
             email: user.email!,
@@ -28,13 +29,51 @@ export const authOptions: NextAuthOptions = {
           return true
         }
 
-        const createdUser = await prisma.user.create({
-          data: {
-            name: user.name!,
-            email: user.email!,
-          },
+        // Only for new users
+        // Insert user, workspace, and assign to workspace user
+        await prisma.$transaction(async (prisma) => {
+          const newUser = await prisma.user.create({
+            data: {
+              name: user.name!,
+              email: user.email!,
+            },
+          })
+
+          const newWorkspace = await prisma.workspace.create({
+            data: {
+              name: `${user.name!.split(" ")[0]}'s Workspace`,
+              Author: {
+                connect: {
+                  id: newUser.id,
+                },
+              },
+            },
+          })
+
+          const newWorkspaceUser = await prisma.workspaceUsers.create({
+            data: {
+              assignedBy: user.email!,
+              assignedAt: new Date(),
+              User: {
+                connect: {
+                  id: newUser.id,
+                },
+              },
+              Workspace: {
+                connect: {
+                  id: newWorkspace.id,
+                },
+              },
+            },
+          })
+
+          console.log(`${newUser.email} inserted to db`)
+          console.log(`${newWorkspace.name} inserted to db`)
+          console.log(
+            `user ${newWorkspaceUser.userId} assigned to workspace ${newWorkspaceUser.workspaceId}`
+          )
         })
-        console.log(`${createdUser.email} inserted to db`)
+
         return true
       } catch (error) {
         console.error(`failed to sign in: ${error}`)

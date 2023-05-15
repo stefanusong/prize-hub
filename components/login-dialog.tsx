@@ -23,9 +23,8 @@ export function LoginDialog() {
             await signIn("google", { callbackUrl: `${window.location.origin}/dashboard` })
         } catch (error) {
             console.error(error);
+            setLoggingIn(false)
         }
-
-        setLoggingIn(false)
     }
 
     return (

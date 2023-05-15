@@ -1,6 +1,6 @@
 "use client"
 
-import * as React from "react"
+import React, { useContext, useState } from 'react';
 import { Check, ChevronsUpDown, PlusCircle } from "lucide-react"
 
 import { cn } from "@/lib/utils"
@@ -38,47 +38,25 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select"
-
-const groups = [
-    {
-        label: "Personal Account",
-        teams: [
-            {
-                label: "Alicia Koch",
-                value: "personal",
-            },
-        ],
-    },
-    {
-        label: "Teams",
-        teams: [
-            {
-                label: "Acme Inc.",
-                value: "acme-inc",
-            },
-            {
-                label: "Monsters Inc.",
-                value: "monsters",
-            },
-        ],
-    },
-]
-
-type Team = (typeof groups)[number]["teams"][number]
+import { WorkspaceContext, WorkspaceContextType } from "@/context/workspace.context"
+import { useSession } from 'next-auth/react';
 
 type PopoverTriggerProps = React.ComponentPropsWithoutRef<typeof PopoverTrigger>
 
-interface TeamSwitcherProps extends PopoverTriggerProps { }
+interface WorkspaceSwitcherProps extends PopoverTriggerProps { }
 
-export default function TeamSwitcher({ className }: TeamSwitcherProps) {
-    const [open, setOpen] = React.useState(false)
-    const [showNewTeamDialog, setShowNewTeamDialog] = React.useState(false)
-    const [selectedTeam, setSelectedTeam] = React.useState<Team>(
-        groups[0].teams[0]
-    )
+export default function WorkspaceSwitcher({ className }: WorkspaceSwitcherProps) {
+    const { data: session } = useSession()
+    if (!session) {
+        return (<></>)
+    }
+
+    const [open, setOpen] = useState(false)
+    const [showNewWorkspaceDialog, setShowNewWorkspaceDialog] = useState(false)
+    const { workspaces, addWorkspace, selectedWorkspace, selectWorkspace } = useContext(WorkspaceContext) as WorkspaceContextType
 
     return (
-        <Dialog open={showNewTeamDialog} onOpenChange={setShowNewTeamDialog}>
+        <Dialog open={showNewWorkspaceDialog} onOpenChange={setShowNewWorkspaceDialog}>
             <Popover open={open} onOpenChange={setOpen}>
                 <PopoverTrigger asChild>
                     <Button
@@ -86,55 +64,51 @@ export default function TeamSwitcher({ className }: TeamSwitcherProps) {
                         size="sm"
                         role="combobox"
                         aria-expanded={open}
-                        aria-label="Select a team"
-                        className={cn("w-[200px] justify-between", className)}
+                        aria-label="Select a workspace"
+                        className={cn("w-[230px] justify-between text-start", className)}
                     >
                         <Avatar className="mr-2 h-5 w-5">
                             <AvatarImage
-                                src={`https://avatar.vercel.sh/${selectedTeam.value}.png`}
-                                alt={selectedTeam.label}
+                                src={`https://avatar.vercel.sh/${selectedWorkspace.id}.png`}
+                                alt={selectedWorkspace.name}
                             />
                             <AvatarFallback>SC</AvatarFallback>
                         </Avatar>
-                        {selectedTeam.label}
+                        {selectedWorkspace.name}
                         <ChevronsUpDown className="ml-auto h-4 w-4 shrink-0 opacity-50" />
                     </Button>
                 </PopoverTrigger>
-                <PopoverContent className="w-[200px] p-0">
+                <PopoverContent className="w-[230px] p-0">
                     <Command>
                         <CommandList>
-                            <CommandInput placeholder="Search team..." />
-                            <CommandEmpty>No team found.</CommandEmpty>
-                            {groups.map((group) => (
-                                <CommandGroup key={group.label} heading={group.label}>
-                                    {group.teams.map((team) => (
-                                        <CommandItem
-                                            key={team.value}
-                                            onSelect={() => {
-                                                setSelectedTeam(team)
-                                                setOpen(false)
-                                            }}
-                                            className="text-sm"
-                                        >
-                                            <Avatar className="mr-2 h-5 w-5">
-                                                <AvatarImage
-                                                    src={`https://avatar.vercel.sh/${team.value}.png`}
-                                                    alt={team.label}
-                                                />
-                                                <AvatarFallback>SC</AvatarFallback>
-                                            </Avatar>
-                                            {team.label}
-                                            <Check
-                                                className={cn(
-                                                    "ml-auto h-4 w-4",
-                                                    selectedTeam.value === team.value
-                                                        ? "opacity-100"
-                                                        : "opacity-0"
-                                                )}
-                                            />
-                                        </CommandItem>
-                                    ))}
-                                </CommandGroup>
+                            <CommandInput placeholder="Search workspace..." />
+                            <CommandEmpty>No workspace found.</CommandEmpty>
+                            {workspaces.map((workspace) => (
+                                <CommandItem
+                                    key={workspace.id}
+                                    onSelect={() => {
+                                        selectWorkspace(workspace)
+                                        setOpen(false)
+                                    }}
+                                    className="text-sm"
+                                >
+                                    <Avatar className="mr-2 h-5 w-5">
+                                        <AvatarImage
+                                            src={`https://avatar.vercel.sh/${workspace.id}.png`}
+                                            alt={workspace.name}
+                                        />
+                                        <AvatarFallback>WS</AvatarFallback>
+                                    </Avatar>
+                                    {workspace.name}
+                                    <Check
+                                        className={cn(
+                                            "ml-auto h-4 w-4",
+                                            selectedWorkspace.name === workspace.name
+                                                ? "opacity-100"
+                                                : "opacity-0"
+                                        )}
+                                    />
+                                </CommandItem>
                             ))}
                         </CommandList>
                         <CommandSeparator />
@@ -144,11 +118,11 @@ export default function TeamSwitcher({ className }: TeamSwitcherProps) {
                                     <CommandItem
                                         onSelect={() => {
                                             setOpen(false)
-                                            setShowNewTeamDialog(true)
+                                            setShowNewWorkspaceDialog(true)
                                         }}
                                     >
                                         <PlusCircle className="mr-2 h-5 w-5" />
-                                        Create Team
+                                        Create Workspace
                                     </CommandItem>
                                 </DialogTrigger>
                             </CommandGroup>
@@ -158,15 +132,15 @@ export default function TeamSwitcher({ className }: TeamSwitcherProps) {
             </Popover>
             <DialogContent>
                 <DialogHeader>
-                    <DialogTitle>Create team</DialogTitle>
+                    <DialogTitle>Create workspace</DialogTitle>
                     <DialogDescription>
-                        Add a new team to manage products and customers.
+                        Add a new workspace to manage products and customers.
                     </DialogDescription>
                 </DialogHeader>
                 <div>
                     <div className="space-y-4 py-2 pb-4">
                         <div className="space-y-2">
-                            <Label htmlFor="name">Team name</Label>
+                            <Label htmlFor="name">Workspace name</Label>
                             <Input id="name" placeholder="Acme Inc." />
                         </div>
                         <div className="space-y-2">
@@ -194,7 +168,7 @@ export default function TeamSwitcher({ className }: TeamSwitcherProps) {
                     </div>
                 </div>
                 <DialogFooter>
-                    <Button variant="outline" onClick={() => setShowNewTeamDialog(false)}>
+                    <Button variant="outline" onClick={() => setShowNewWorkspaceDialog(false)}>
                         Cancel
                     </Button>
                     <Button type="submit">Continue</Button>

@@ -17,7 +17,7 @@ model User {
   createdAt DateTime @default(now()) @map(name: "created_at")
   updatedAt DateTime @updatedAt @map(name: "updated_at")
 
-  workspaces     Workspace[]
+  Workspaces     Workspace[]
   WorkspaceUsers WorkspaceUsers[]
 
   @@map(name: "users")
@@ -29,7 +29,7 @@ model Workspace {
   createdAt DateTime @default(now()) @map(name: "created_at")
   updatedAt DateTime @updatedAt @map(name: "updated_at")
 
-  author         User?            @relation(fields: [authorId], references: [id])
+  Author         User?            @relation(fields: [authorId], references: [id])
   authorId       Int?
   WorkspaceUsers WorkspaceUsers[]
 
@@ -37,9 +37,9 @@ model Workspace {
 }
 
 model WorkspaceUsers {
-  workspace   Workspace @relation(fields: [workspaceId], references: [id])
+  Workspace   Workspace @relation(fields: [workspaceId], references: [id])
   workspaceId Int
-  user        User      @relation(fields: [userId], references: [id])
+  User        User      @relation(fields: [userId], references: [id])
   userId      Int
 
   assignedAt DateTime @default(now())

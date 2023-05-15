@@ -4,7 +4,7 @@ import { Metadata } from "next"
 import { siteConfig } from "@/config/site"
 import { fontSans } from "@/lib/fonts"
 import { cn } from "@/lib/utils"
-import { SiteHeader } from "@/components/site-header"
+import { Navbar } from "@/components/navbar"
 import { TailwindIndicator } from "@/components/tailwind-indicator"
 import Providers from "@/components/providers"
 
@@ -41,7 +41,7 @@ export default function DashboardLayout({ children }: RootLayoutProps) {
         >
           <Providers>
             <div className="relative flex flex-col">
-              <SiteHeader />
+              <Navbar />
               <div className="flex-1">{children}</div>
             </div>
             <TailwindIndicator />

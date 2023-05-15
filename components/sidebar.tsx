@@ -29,10 +29,6 @@ export function Sidebar({ className }: SidebarProps) {
               <Gift className="mr-2 h-4 w-4" />
               Doorprize
             </Button>
-            <Button variant="ghost" size="sm" className="w-full justify-start">
-              <UserCheck className="mr-2 h-4 w-4" />
-              Admin
-            </Button>
           </div>
         </div>
         {/* Master Data */}
