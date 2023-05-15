@@ -47,13 +47,13 @@ interface WorkspaceSwitcherProps extends PopoverTriggerProps { }
 
 export default function WorkspaceSwitcher({ className }: WorkspaceSwitcherProps) {
     const { data: session } = useSession()
-    if (!session) {
-        return (<></>)
-    }
-
     const [open, setOpen] = useState(false)
     const [showNewWorkspaceDialog, setShowNewWorkspaceDialog] = useState(false)
     const { workspaces, addWorkspace, selectedWorkspace, selectWorkspace } = useContext(WorkspaceContext) as WorkspaceContextType
+
+    if (!session) {
+        return (<></>)
+    }
 
     return (
         <Dialog open={showNewWorkspaceDialog} onOpenChange={setShowNewWorkspaceDialog}>
