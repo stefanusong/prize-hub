@@ -1,7 +1,7 @@
 "use client"
 
-import React, { useContext, useState } from 'react';
-import { Check, ChevronsUpDown, PlusCircle } from "lucide-react"
+import React, { useContext, useRef, useState } from 'react';
+import { Check, ChevronsUpDown, Loader2, PlusCircle } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
@@ -31,15 +31,9 @@ import {
     PopoverContent,
     PopoverTrigger,
 } from "@/components/ui/popover"
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "@/components/ui/select"
 import { WorkspaceContext, WorkspaceContextType } from "@/context/workspace.context"
 import { useSession } from 'next-auth/react';
+import { useToast } from '@/components/ui/use-toast';
 
 type PopoverTriggerProps = React.ComponentPropsWithoutRef<typeof PopoverTrigger>
 
@@ -49,7 +43,53 @@ export default function WorkspaceSwitcher({ className }: WorkspaceSwitcherProps)
     const { data: session } = useSession()
     const [open, setOpen] = useState(false)
     const [showNewWorkspaceDialog, setShowNewWorkspaceDialog] = useState(false)
+    const [creatingWorkspace, setCreatingWorkspace] = useState(false)
     const { workspaces, addWorkspace, selectedWorkspace, selectWorkspace } = useContext(WorkspaceContext) as WorkspaceContextType
+    const { toast } = useToast()
+
+    const newWorkspaceName = useRef<HTMLInputElement | null>(null);
+
+    const createNewWorkspace = async () => {
+        setCreatingWorkspace(true)
+        try {
+            if (newWorkspaceName.current) {
+                const workspaceName = newWorkspaceName.current.value;
+                const response = await fetch('/api/workspaces', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ name: workspaceName }),
+                });
+
+                const resp = await response.json()
+
+                if (resp.status != 200) {
+                    toast({
+                        title: "Failed to create workspace",
+                        description: resp.message
+                    })
+                }
+
+                const newWorkspace = resp.data
+                addWorkspace(newWorkspace)
+
+            }
+        } catch (error) {
+            alert(error)
+            toast({
+                title: "Failed to create workspace",
+                description: error
+            })
+        }
+
+        toast({
+            title: "Workspace Created",
+            description: `Successfully created ${newWorkspaceName.current?.value} workspace.`
+        })
+        setShowNewWorkspaceDialog(false)
+        setCreatingWorkspace(false)
+    };
 
     if (!session) {
         return (<></>)
@@ -130,40 +170,19 @@ export default function WorkspaceSwitcher({ className }: WorkspaceSwitcherProps)
                     </Command>
                 </PopoverContent>
             </Popover>
+
             <DialogContent>
                 <DialogHeader>
                     <DialogTitle>Create workspace</DialogTitle>
                     <DialogDescription>
-                        Add a new workspace to manage products and customers.
+                        Add a new workspace to manage your doorprize events.
                     </DialogDescription>
                 </DialogHeader>
                 <div>
                     <div className="space-y-4 py-2 pb-4">
                         <div className="space-y-2">
                             <Label htmlFor="name">Workspace name</Label>
-                            <Input id="name" placeholder="Acme Inc." />
-                        </div>
-                        <div className="space-y-2">
-                            <Label htmlFor="plan">Subscription plan</Label>
-                            <Select>
-                                <SelectTrigger>
-                                    <SelectValue placeholder="Select a plan" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="free">
-                                        <span className="font-medium">Free</span> -{" "}
-                                        <span className="text-muted-foreground">
-                                            Trial for two weeks
-                                        </span>
-                                    </SelectItem>
-                                    <SelectItem value="pro">
-                                        <span className="font-medium">Pro</span> -{" "}
-                                        <span className="text-muted-foreground">
-                                            $9/month per user
-                                        </span>
-                                    </SelectItem>
-                                </SelectContent>
-                            </Select>
+                            <Input id="name" placeholder="Enter workspace name" ref={newWorkspaceName} />
                         </div>
                     </div>
                 </div>
@@ -171,9 +190,20 @@ export default function WorkspaceSwitcher({ className }: WorkspaceSwitcherProps)
                     <Button variant="outline" onClick={() => setShowNewWorkspaceDialog(false)}>
                         Cancel
                     </Button>
-                    <Button type="submit">Continue</Button>
+
+                    {!creatingWorkspace && (
+                        <Button type="submit" onClick={createNewWorkspace}>Create</Button>
+                    )}
+
+                    {creatingWorkspace && (
+                        <Button disabled type="submit" onClick={createNewWorkspace}>
+                            <Loader2 className="animate-spin" />
+                            Create</Button>
+                    )}
+
                 </DialogFooter>
             </DialogContent>
+
         </Dialog>
     )
 }

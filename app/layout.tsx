@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils"
 import { Navbar } from "@/components/navbar"
 import { TailwindIndicator } from "@/components/tailwind-indicator"
 import Providers from "@/components/providers"
+import { Toaster } from "@/components/ui/toaster"
 
 export const metadata: Metadata = {
   title: {
@@ -43,6 +44,7 @@ export default function DashboardLayout({ children }: RootLayoutProps) {
             <div className="relative flex flex-col">
               <Navbar />
               <div className="flex-1">{children}</div>
+              <Toaster />
             </div>
             <TailwindIndicator />
           </Providers>
